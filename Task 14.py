@@ -20,19 +20,35 @@ table = bsoup.find_all('div', attrs={'class':"ipc-title ipc-title--base ipc-titl
 
 # print(table[0].find('a').find('h3').text)
 
-def moviename(mn):
-    return mn.find('a').find('h3').text
+def moviename(mr):
+    return mr.find('a').find('h3').text
 
-def movieyear(my):
-    return my.nextSibling.find('span').getText()
+def movieyear(mr):
+    movieyr_spans = mr.nextSibling.find_all('span')[0:2] 
+    return[span.get_text() for span in movieyr_spans]
 
 def movierating(mr):
-   return mr.find('span')
-    
+   rating_div = mr.find_all('div',attrs ={'class' :"sc-e2dbc1a3-0 jeHPdh sc-b189961a-2 bglYHz cli-ratings-container"})
+   if rating_div:
+        spans = rating_div.find_all('span')
+        return [span.get_text() for span in spans]  
+   else:
+        return []
 
-allmovies = [movierating(mr) for mr in table]
+# allmovies = [(movierating(mr),moviename(mr),movieyear(mr)) for mr in table]
 
-print(allmovies)
+# print(allmovies)
+
+
+allmovies = []
+for mr in table:
+    rating = movierating(mr)
+    name = moviename(mr)
+    year, runtime = movieyear(mr)
+    allmovies.append((rating, name, year, runtime))
+
+for movie in allmovies:
+    print(f"Rating: {movie[0]}, Name: {movie[1]}, Year: {movie[2]}, Runtime: {movie[3]}")
 
 
 
